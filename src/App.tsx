@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard, Users, Target, BarChart2, Calendar, Brain, Shield,
-  LogOut, Bell, Sparkles, Sun, Moon, CheckCircle, Menu, X, ArrowRight, BookOpen, Cpu
+  LogOut, Bell, Sparkles, Sun, Moon, CheckCircle, Menu, X, ArrowRight, BookOpen, Cpu, Cloud
 } from 'lucide-react';
 
 // Components
@@ -17,6 +17,7 @@ import CompetitorView from './components/CompetitorView';
 import CalendarTasksView from './components/CalendarTasksView';
 import ReportsView from './components/ReportsView';
 import MLTrainingView from './components/MLTrainingView';
+import FirebaseSyncView from './components/FirebaseSyncView';
 
 const API_BASE_URL = ''; // Serve from relative path (Vite proxies or same origin Express port)
 
@@ -127,6 +128,8 @@ export default function App() {
         return <ReportsView apiBaseUrl={API_BASE_URL} token={token} />;
       case 'ml-lab':
         return <MLTrainingView apiBaseUrl={API_BASE_URL} token={token} />;
+      case 'firebase-sync':
+        return <FirebaseSyncView apiBaseUrl={API_BASE_URL} token={token} />;
       default:
         return <DashboardView apiBaseUrl={API_BASE_URL} token={token} user={user} onNavigate={setCurrentView} />;
     }
@@ -139,6 +142,7 @@ export default function App() {
     { id: 'opportunities', label: 'Opportunities Board', icon: Target },
     { id: 'calendar-tasks', label: 'Meetings & Tasks', icon: Calendar },
     { id: 'reports', label: 'Reporting Workbook', icon: BarChart2 },
+    { id: 'firebase-sync', label: 'Firebase Cloud Sync', icon: Cloud },
   ];
 
   const aiMenuItems = [

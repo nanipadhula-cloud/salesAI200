@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User as UserIcon, Shield, ArrowRight, Sparkles } from 'lucide-react';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from '../firebase';
 
 interface LoginViewProps {
   onLoginSuccess: (token: string, user: any) => void;
@@ -15,6 +17,35 @@ export default function LoginView({ onLoginSuccess, apiBaseUrl }: LoginViewProps
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setMessage('');
+    setLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const res = await fetch(`${apiBaseUrl}/api/auth/firebase-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to authenticate via Firebase.');
+      onLoginSuccess(data.token, data.user);
+    } catch (err: any) {
+      setError(err.message || 'Firebase Google login failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,6 +237,25 @@ export default function LoginView({ onLoginSuccess, apiBaseUrl }: LoginViewProps
               )}
             </button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-800/80"></div>
+            </div>
+            <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-semibold">
+              <span className="bg-slate-900/60 px-3 text-slate-500">Or secure sync with</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full py-3 bg-slate-950/60 hover:bg-slate-950 hover:text-cyan-400 border border-slate-800 text-white font-medium rounded-xl text-sm transition-all flex items-center justify-center gap-2.5 cursor-pointer hover:border-slate-700 disabled:opacity-50 active:scale-[0.99]"
+          >
+            <span className="text-base">🛡️</span>
+            Google SSO (Firebase Auth)
+          </button>
 
           {/* Seed accounts notice */}
           {!isSignUp && (

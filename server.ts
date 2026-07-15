@@ -173,6 +173,55 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+app.post('/api/auth/firebase-login', async (req, res) => {
+  try {
+    const { uid, email, displayName, photoURL } = req.body;
+    if (!uid || !email) {
+      res.status(400).json({ error: 'UID and email are required.' });
+      return;
+    }
+
+    const users = db.getUsers();
+    let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+    if (!user) {
+      user = {
+        id: uid,
+        name: displayName || email.split('@')[0],
+        email: email.toLowerCase(),
+        passwordHash: '',
+        role: 'Sales Executive',
+        avatar: photoURL || '',
+        createdAt: new Date().toISOString()
+      };
+      db.addUser(user);
+
+      db.addNotification({
+        id: 'n-' + Math.random().toString(36).substring(2, 9),
+        userId: user.id,
+        title: 'Welcome via Firebase Secure Auth!',
+        message: 'Account provisioned successfully via Google Firebase Sign-In.',
+        read: false,
+        type: 'System',
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role, name: user.name },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      token,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar }
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Firebase authentication failed.' });
+  }
+});
+
 app.get('/api/auth/me', authenticateToken, (req: AuthenticatedRequest, res) => {
   if (!req.user) {
     res.status(401).json({ error: 'Unauthorized.' });
@@ -203,6 +252,16 @@ app.post('/api/auth/forgot', (req, res) => {
     return;
   }
   res.json({ message: 'Password recovery email simulated successfully. In a real-world scenario, a link would be sent.' });
+});
+
+app.post('/api/sync-restore', authenticateToken, (req, res) => {
+  try {
+    const { leads, customers, opportunities, tasks, notifications } = req.body;
+    db.syncRestore({ leads, customers, opportunities, tasks, notifications });
+    res.json({ success: true, message: 'CRM local database state updated and verified.' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to apply synchronized restore packet.' });
+  }
 });
 
 /**

@@ -687,6 +687,21 @@ class SalesCRMDatabase {
     if (n) { n.read = true; this.save(); }
   }
 
+  public syncRestore(data: {
+    leads: Lead[];
+    customers: Customer[];
+    opportunities: Opportunity[];
+    tasks: Task[];
+    notifications: Notification[];
+  }) {
+    if (data.leads) this.db.leads = data.leads;
+    if (data.customers) this.db.customers = data.customers;
+    if (data.opportunities) this.db.opportunities = data.opportunities;
+    if (data.tasks) this.db.tasks = data.tasks;
+    if (data.notifications) this.db.notifications = data.notifications;
+    this.save();
+  }
+
   public clearAll() {
     this.seedDefaults();
   }

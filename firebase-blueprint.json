@@ -1,0 +1,148 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile in the CRM system",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["Admin", "Sales Manager", "Sales Executive"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Onboarded corporate client profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "company": { "type": "string" },
+        "industry": { "type": "string" },
+        "size": { "type": "string" },
+        "budget": { "type": "number" },
+        "country": { "type": "string" },
+        "source": { "type": "string" },
+        "status": { "type": "string", "enum": ["Active", "Inactive", "Churned"] },
+        "ownerId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "company", "status", "ownerId"]
+    },
+    "Lead": {
+      "title": "Lead",
+      "description": "Prospect lead record with sales intelligence parameters",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "company": { "type": "string" },
+        "industry": { "type": "string" },
+        "size": { "type": "string" },
+        "budget": { "type": "number" },
+        "jobTitle": { "type": "string" },
+        "source": { "type": "string" },
+        "status": { "type": "string", "enum": ["New", "Contacted", "Qualified", "Lost"] },
+        "priority": { "type": "string", "enum": ["Low", "Medium", "High", "Urgent"] },
+        "tags": { "type": "array" },
+        "notes": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "score": { "type": "number" },
+        "scoreExplanation": { "type": "string" },
+        "buyingIntent": { "type": "string", "enum": ["Low", "Medium", "High", "Very High"] },
+        "painPoints": { "type": "string" },
+        "urgency": { "type": "string", "enum": ["Cold", "Warm", "Hot", "Very Hot"] },
+        "budgetLevel": { "type": "string", "enum": ["Low", "Medium", "High", "Enterprise"] },
+        "recommendation": { "type": "string" },
+        "nextAction": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "company", "budget", "status", "priority", "ownerId"]
+    },
+    "Opportunity": {
+      "title": "Opportunity",
+      "description": "Pipeline deal opportunity metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "leadId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "name": { "type": "string" },
+        "company": { "type": "string" },
+        "stage": { "type": "string", "enum": ["Discovery", "Proposal", "Negotiation", "Contracting", "Closed Won", "Closed Lost"] },
+        "revenue": { "type": "number" },
+        "expectedClosingDate": { "type": "string" },
+        "probability": { "type": "number" },
+        "riskLevel": { "type": "string", "enum": ["Low", "Medium", "High"] },
+        "predictedStrategy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "company", "stage", "revenue", "probability"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Assigned executive action task",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "dueDate": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Completed"] },
+        "priority": { "type": "string", "enum": ["Low", "Medium", "High"] },
+        "type": { "type": "string", "enum": ["Call", "Email", "Meeting", "Follow-up"] },
+        "ownerId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "status", "priority", "ownerId"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "System generated CRM user alert",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "read": { "type": "boolean" },
+        "type": { "type": "string", "enum": ["Meeting", "Task", "Lead", "Deal", "System"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "title", "message", "read", "type"]
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": "User",
+      "description": "Registered workspace users collection"
+    },
+    "customers": {
+      "schema": "Customer",
+      "description": "Corporate clients collection"
+    },
+    "leads": {
+      "schema": "Lead",
+      "description": "CRM leads pipeline collection"
+    },
+    "opportunities": {
+      "schema": "Opportunity",
+      "description": "Deal opportunities tracker collection"
+    },
+    "tasks": {
+      "schema": "Task",
+      "description": "CRM sales tasks collection"
+    },
+    "notifications": {
+      "schema": "Notification",
+      "description": "CRM platform notifications collection"
+    }
+  }
+}
